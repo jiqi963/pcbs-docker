@@ -1,0 +1,78 @@
+version: '3'
+
+services:
+  # Builds static assets
+  pcbu-client:
+    build:
+      context: ./client
+    volumes:
+      - static:/assets
+
+  # API server
+  pcbu-api:
+    build:
+      context: ./api
+    environment:
+      NODE_CONFIG:
+        # Must by valid JSON
+        >
+        {
+          "server": {
+            "port": 80
+          },
+          "mongodb": "mongodb://pcbu-mongodb:27017/pcbu",
+          "mysql": {
+            "host": "pcbu-joomla-mysql",
+            "user": "dashboard_user",
+            "password": "a43b68d063",
+            "database": "pcbu"
+          },
+          "jsonWebToken": {
+            "secret": "dfsgbou54wthw3489hgrshlfoq34"
+          }
+        }
+    ports:
+      - 80
+    links:
+      - pcbu-mongodb
+      - pcbu-joomla-mysql
+
+  # Nginx to serve static assets and reverse proxy /api to API server
+  pcbu-nginx:
+    restart: always
+    build:
+      context: ./nginx
+    ports:
+      # Expose web server to host on port 80
+      - 80:80
+    volumes:
+      - static:/static
+    links:
+      - pcbu-api
+
+  # MongoDB
+  # NOTE: Existing data needs to be loaded into this in a database named pcbu
+  pcbu-mongodb:
+    image: mongo:4.4
+    restart: always
+    ports:
+      - 27017
+
+  # MySQL for the Joomla website
+  # NOTE: This is a placeholder for the real Joomla database.
+  #       The pcbu-api service needs to be able to reach the database.
+  #       See the mysql config for the pcbu-api service.
+  pcbu-joomla-mysql:
+    image: mysql:5.7.40
+    restart: always
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: 1
+      MYSQL_USER: dashboard_user
+      MYSQL_PASSWORD: a43b68d063
+      MYSQL_DATABASE: pcbu
+    ports:
+      - 3306
+
+volumes:
+  # This volume is used to share the static assets between the client build and Nginx
+  static:

@@ -1,0 +1,33 @@
+{
+  "name": "pcbu-api",
+  "version": "0.0.0",
+  "description": "PCBU API server",
+  "main": "app.js",
+  "scripts": {
+    "test": "gulp test"
+  },
+  "author": "matt@mnorrish.co.nz",
+  "license": "All rights reserved",
+  "private": true,
+  "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
+    "body-parser": "1.13.x",
+    "coffee-script": "1.9.x",
+    "config": "1.13.x",
+    "cors": "2.7.x",
+    "express": "4.12.x",
+    "express-jwt": "3.0.x",
+    "express-session": "1.11.x",
+    "jsonwebtoken": "5.0.x",
+    "minimist": "1.2.x",
+    "mongoose": "4.0.x",
+    "morgan": "1.10.x",
+    "mysql": "2.9.x"
+  },
+  "devDependencies": {
+    "chai": "2.3.x",
+    "gulp": "3.8.x",
+    "gulp-mocha": "2.0.x",
+    "supertest": "1.0.x"
+  }
+}

@@ -1,0 +1,17 @@
+content-bar(
+  heading='"Sign in"',
+)
+
+.container
+  .row
+    .col-md-4.col-sm-6
+      form(name='signInForm', novalidate)
+        .form-group
+          label.control-label(for='signInUsername') Username
+          input#signInUsername.form-control(ng-model='username', type='text', required)
+        
+        .form-group
+          label.control-label(for='signInPassword') Password
+          input#signInPassword.form-control(ng-model='password', type='password', required)
+
+        button.btn.btn-primary(ng-click='signIn()', ng-disabled='!signInForm.$dirty || !signInForm.$valid') Sign in

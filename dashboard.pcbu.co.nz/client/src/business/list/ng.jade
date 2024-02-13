@@ -1,0 +1,57 @@
+content-bar(
+  heading='"All businesses"',
+  extra='"Add a business"'
+  extra-action='addBusiness'
+  back='"All certifications"'
+  back-action='navToCertifications'
+)
+
+.container
+
+  .row.hidden-print
+    .col-sm-3.col-sm-offset-9.col-lg-2.col-lg-offset-10
+      .input-group.text-search
+        span.input-group-addon
+          span.glyphicon.glyphicon-search
+        input.form-control(
+          type='text'
+          placeholder='filter'
+          ng-model='textSearch'
+        )
+
+  ol.block-list.list-unstyled
+    li.block-list-item(
+      ng-repeat='b in businessList | filter : businessSearchFilter | orderBy : getBusinessOrder'
+    )
+      .panel.panel-default(ng-click='navToBusiness(b._id)')
+        .panel-body
+          .row
+            .col-sm-4
+              h3.name {{b.name}}
+                br
+                small(ng-show='b.locality') {{b.locality.name}}, {{b.locality.region}} 
+              
+              .details
+                span.service-level.label.label-warning System 
+                  strong {{b.serviceLevel}}
+                span.industry.text-nowrap(ng-show='b.industry') {{b.industry.join(', ')}}
+            
+            .col-sm-8
+              .urgency-notifications
+                .due.is-due-block(
+                  ng-if='isAnnualReviewDue(b)'
+                )
+                  .text.text-only Annual review due on {{nextAnnualReviewDate(b) | date : 'MMMM d, yyyy'}}
+                .due(
+                  ng-if='getUrgency(b).due.length',
+                  ng-class='getUrgencyClass(getUrgency(b).due[0].expiryDate, "block")'
+                )
+                  .count {{getUrgency(b).due.length}}
+                  .text due within {{daysDue}} days
+                  
+                .due(
+                  ng-if='getUrgency(b).dueSoon.length',
+                  ng-class='getUrgencyClass(getUrgency(b).dueSoon[0].expiryDate, "block")'
+                )
+                  .count {{getUrgency(b).dueSoon.length}}
+                  .text due within {{daysDueSoon}} days

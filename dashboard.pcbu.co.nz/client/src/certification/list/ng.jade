@@ -1,0 +1,22 @@
+content-bar(
+  heading='"All certifications"'
+  back='"All businesses"'
+  back-action='navToBusinesses'
+)
+
+.container
+
+  .row.hidden-print
+    .col-sm-3.col-sm-offset-9.col-lg-2.col-lg-offset-10
+      .input-group.text-search
+        span.input-group-addon
+          span.glyphicon.glyphicon-search
+        input.form-control(
+          type='text'
+          placeholder='filter'
+          ng-model='textSearch'
+        )
+  
+  .row
+    .col-xs-12
+      certification-summary(all='true', text-search='textSearch')

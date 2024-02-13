@@ -1,0 +1,30 @@
+content-bar(
+  heading='"All users"'
+  extra='currentUser.user.isAdmin ? "Add a user" : null'
+  extra-action='addUser'
+)
+
+.container
+
+  .row
+    .col-sm-3.col-sm-offset-9.col-lg-2.col-lg-offset-10
+      .input-group.text-search
+        span.input-group-addon
+          span.glyphicon.glyphicon-search
+        input.form-control(
+          type='text'
+          placeholder='filter users'
+          ng-model='textSearch'
+        )
+  
+  .row
+    .col-xs-12
+      .row(ng-repeat='u in users | filter : textSearch', style='margin-bottom: 1em;')
+        .col-xs-9.col-lg-10
+          .name
+            strong {{u.nameFirst}} {{u.nameLast}} 
+            span ({{u.username}})
+          .is-admin
+            em {{u.isAdmin ? 'Admin' : ''}}
+        .col-xs-3.col-lg-2
+          a.btn.btn-default.btn-block(ng-click='editUser(u)') Edit

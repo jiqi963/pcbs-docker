@@ -1,0 +1,43 @@
+nav.navbar.navbar-inverse.navbar-static-top(ng-controller='UserController')
+  .container
+    
+    .navbar-header
+    
+      button.navbar-toggle.collapsed.navbar-right(
+        type='button'
+        ng-show='currentUser.user || clientIsLoggedIn'
+        ng-click='isNavCollapsed = !isNavCollapsed'
+      )
+        span.sr-only Toggle navigation
+        span.icon-bar
+        span.icon-bar
+        span.icon-bar
+      
+      .navbar-brand PCBU
+    
+    div(ng-if='currentUser.user')
+      .navbar-collapse(
+        collapse='isNavCollapsed'
+      )
+        .navbar-right.navbar-actions
+          p.navbar-text Signed in as 
+            a(href='#', ng-click='editCurrentUser()') {{currentUser.user.nameFirst}} {{currentUser.user.nameLast}}
+          button.btn.btn-primary.navbar-btn(
+            type='button'
+            ng-click='signOut()'
+          ) Sign out
+          a.btn.btn-primary.navbar-btn.pull-right(
+            href='javascript:window.print()'
+          ) Print this page
+    div(ng-if='clientIsLoggedIn && !currentUser.user')
+      .navbar-collapse(
+        collapse='isNavCollapsed'
+      )
+        .navbar-right.navbar-actions
+          a.btn.btn-primary.navbar-btn(
+            href='javascript:window.print()'
+          ) Print this page
+          button.btn.btn-primary.navbar-btn(
+            type='button'
+            ng-click='toJoomla()'
+          ) Back to Dashboard

@@ -1,0 +1,51 @@
+{
+  "name": "pcbu-web",
+  "version": "0.0.0",
+  "description": "PCBU web client",
+  "main": "app.js",
+  "scripts": {
+    "test": "gulp test",
+    "gulp": "gulp",
+    "revision": "gulp revision"
+  },
+  "author": "matt@tdmarketing.co.nz",
+  "license": "All rights reserved",
+  "private": true,
+  "devDependencies": {
+    "browser-sync": "^2.7.9",
+    "browserify": "^10.2.4",
+    "browserify-ngannotate": "^1.0.1",
+    "coffee-script": "^1.9.3",
+    "coffeeify": "^1.1.0",
+    "connect-history-api-fallback": "^1.1.0",
+    "del": "^1.2.0",
+    "gulp": "^3.9.0",
+    "gulp-angular-templatecache": "^1.6.0",
+    "gulp-coffeelint": "^0.5.0",
+    "gulp-jade": "^1.0.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-rev-all": "^0.8.21",
+    "gulp-sass": "^4.1.1",
+    "gulp-sourcemaps": "^1.5.2",
+    "gulp-util": "^3.0.5",
+    "gulp-watch": "^4.2.4",
+    "require-dir": "^0.3.0",
+    "uglifyify": "^3.0.1",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0",
+    "gulp-rev": "~7.1.2"
+  },
+  "dependencies": {
+    "angular": "^1.3.16",
+    "angular-bootstrap": "^0.12.0",
+    "angular-route": "^1.3.16",
+    "angular-sanitize": "^1.4.1",
+    "angular-ui-utils": "^0.1.1",
+    "bootstrap-sass": "^3.3.7",
+    "lodash": "^3.9.3",
+    "moment": "^2.10.3",
+    "ngstorage": "^0.3.4",
+    "restangular": "^1.5.1",
+    "ui-select": "^0.19.8"
+  }
+}

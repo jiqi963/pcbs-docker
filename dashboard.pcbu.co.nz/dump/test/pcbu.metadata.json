@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"businesses":{"$numberDouble":"1.0"}},"name":"businesses_1"}],"uuid":"dd0cd0939fde4ecc818a9ccba64d3854","collectionName":"pcbu","type":"collection"}

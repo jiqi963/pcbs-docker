@@ -1,0 +1,70 @@
+content-bar(
+  heading='groupName',
+  back='businessId ? business.name : "All certifications"',
+  back-action='navBack'
+  extra='businessId && hasEditRight() ? "Add certification" : null'
+  extra-action='hasEditRight() ? addCertification : null'
+)
+
+.container
+  .certifications-by-urgency(ng-repeat='(urgencyKey, certs) in certificationsByUrgency')
+    
+    .row
+      
+      .col-sm-3
+        .due(
+          ng-class='getUrgencyClass(certs[0].expiryDate, "block")'
+        )
+          .count {{certs.length}}
+          .text(ng-if='urgencyKey !== "notDue"') due within {{days[urgencyKey]}} days
+          .text(ng-if='urgencyKey === "notDue"') not due
+      
+      .col-sm-9
+        ol.list-unstyled
+          li
+            .row
+              .col-xs-6(ng-class='{"col-sm-6": !hasEditRight(), "col-sm-3": hasEditRight()}')
+                .name
+                  span(ng-if='classification === "person"')
+                    strong Person
+                  span(ng-if='classification === "equipment"')
+                    strong Item
+                  span(ng-if='classification === "material"')
+                    strong Item
+                  span(ng-if='classification === "vehicle"')
+                    strong Vehicle
+              .col-xs-3
+                .expiry-date
+                  strong Date
+              .col-xs-3
+                .expiry-date
+                  strong Expiry
+          
+          li(ng-repeat='c in certs')
+              
+            .row
+              .col-xs-6(ng-class='{"col-sm-6": !hasEditRight(), "col-sm-3": hasEditRight()}')
+                .name
+                    span(ng-if='classification === "person"').person-name
+                      strong {{c.person.nameFirst}} {{c.person.nameLast}}
+                      span(ng-if='c.person.position') , {{c.person.position}}
+                    span(ng-if='classification === "equipment"').person-name
+                      strong {{c.equipment.description}}
+                    span(ng-if='classification === "material"').person-name
+                      strong {{c.material.description}}
+                    span(ng-if='classification === "vehicle"').person-name
+                      strong{{c.vehicle.make}} {{c.vehicle.model}} ({{c.vehicle.registration}})
+                .business(ng-if='businesses')
+                  em {{businesses[c.business].name}}
+              
+              .col-xs-3
+                .expiry-date {{c.date | date : 'MMM d, yyyy'}}
+              
+              .col-xs-3
+                .expiry-date {{c.expiryDate | date : 'MMM d, yyyy'}}
+              
+              .col-sm-3.hidden-print(ng-if='hasEditRight()')
+                  button.btn.btn-default.btn-block(
+                    type='button'
+                    ng-click='update(c)'
+                  ) Update

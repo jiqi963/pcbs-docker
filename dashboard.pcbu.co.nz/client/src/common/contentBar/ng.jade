@@ -1,0 +1,15 @@
+header.content-bar
+  .container
+    .row
+      .col-xs-12
+        a.back-btn.hidden-print(href='#', ng-if='back', ng-click='backAction()') < {{back}}
+        h2.visible-print-block(ng-if='back') {{back}}
+    .row
+      .col-lg-10.col-sm-9
+        h1 {{heading}}
+      .col-lg-2.col-sm-3.hidden-print
+        button.btn.btn-primary.btn-block.extra-btn(
+          ng-if='extra'
+          ng-click='extraAction()'
+        ) {{extra}}
+      

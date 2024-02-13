@@ -1,0 +1,51 @@
+content-bar(
+  heading='business.name',
+  back='navToAll ? "All businesses" : null',
+  back-action='navToAll ? navToAll : null'
+  extra='client || !business ? null : "Edit business"'
+  extra-action='client ? null: edit'
+)
+
+.container(ng-if='client && !business')
+  p You do not yet have access to staff information. Please contact PCBU to arrange this.
+  p
+    button.btn.btn-default(type='button', ng-click='toJoomla()') Return to your dashboard</a>
+
+.container(ng-if='business')
+  
+  .row
+    .col-xs-12
+      .annual-review-due(ng-if='isAnnualReviewDue(business)') Annual review due on {{nextAnnualReviewDate(business) | date : 'MMMM d, yyyy'}}
+      
+  .row
+    .col-sm-9.col-lg-10
+      .business-details
+        .service-level(style='margin-bottom: 1em')
+          .label.label-warning System 
+            strong {{business.serviceLevel}}
+        .locality(ng-if='business.locality') {{business.locality.name}}, {{business.locality.region}}
+        .industry(ng-if='business.industry.length > 0') {{business.industry.join(', ')}}
+        .contact(ng-if='business.contactPcbu[0]')
+          span.name-first {{business.contactPcbu[0].nameFirst}} 
+          span.name-last {{business.contactPcbu[0].nameLast}}
+          span.position(ng-if='business.contactPcbu[0].position'), {{business.contactPcbu[0].position}} 
+          span.phone {{business.contactPcbu[0].phone}} 
+          span.email {{business.contactPcbu[0].email}}
+          
+    .col-sm-3.col-lg-2.hidden-print
+      .input-group.text-search
+        span.input-group-addon
+          span.glyphicon.glyphicon-search
+        input.form-control(
+          type='text'
+          placeholder='filter'
+          ng-model='textSearch'
+        )
+        
+  .row(ng-if='client && !client.active')
+    .col-xs-12
+      .alert.alert-danger Your account has been deactivated. Please contact PCBU to resolve this.
+
+  .row(ng-hide='client && !client.active')
+    .col-xs-12
+      certification-summary(business='business', text-search='textSearch', isClient='isClient()')

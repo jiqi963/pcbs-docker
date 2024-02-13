@@ -1,0 +1,116 @@
+{{hasClientEditRight()}}
+
+tabset
+  tab(ng-repeat='t in tabs', active='t.isActive')
+    tab-heading {{t.heading}} 
+      span.badge {{certificationGroups[t.classification].length}}
+      
+    .row.tab-actions.hidden-print
+
+      //- View people button
+      .col-sm-3.col-lg-2(style="margin-bottom: 1em;")
+        button.btn.btn-block(
+          ng-if='!viewHolder'
+          ng-click='switchView()'
+        ) Group by holder
+
+        button.btn.btn-block(
+          ng-if='viewHolder'
+          ng-click='switchView()'
+        ) Group by certification
+
+      .col-sm-3.col-sm-offset-6.col-lg-2.col-lg-offset-8(
+        ng-if='hasEditRight()'
+      )
+        button.btn.btn-block(
+          ng-if='business._id'
+          ng-click='addCertification()'
+        ) Add certification
+    
+    div(ng-if="!viewHolder")
+      p(ng-if='!certificationGroups[t.classification] || !certificationGroups[t.classification].length === 0') No certifications of this type.
+
+      ol.block-list.list-unstyled(
+        ng-if='certificationGroups[t.classification].length > 0'
+      )
+        li.block-list-item(ng-repeat='g in certificationGroups[t.classification] | filter : groupSearchFilter | orderBy : getGroupOrder')
+          .panel.panel-default(ng-click='navigateToGroup(g)')
+            .panel-body
+              .row
+                .col-sm-6
+                  h3.name {{g.name}}
+                    br
+                    small
+                      ng-pluralize(count='g.certifications.length', when='{one: "1 holder", other: "{} holders"}')
+                  
+                  .details
+                    .next-expiry(
+                      ng-class='getUrgencyClass(g.certifications[0].expiryDate)'
+                    ) Next due: 
+                      span(ng-if='t.classification === "person"') {{g.certifications[0].person.nameFirst}} {{g.certifications[0].person.nameLast}}
+                      span(ng-if='t.classification === "equipment"') {{g.certifications[0].equipment.description}}
+                      span(ng-if='t.classification === "material"') {{g.certifications[0].material.description}}
+                      span(ng-if='t.classification === "vehicle"') {{g.certifications[0].vehicle.make}} {{g.certifications[0].vehicle.model}} ({{g.certifications[0].vehicle.registration}})
+                      em(ng-if='businesses') , {{businesses[g.certifications[0].business].name}}
+                      span  on {{g.certifications[0].expiryDate | date : 'MMMM d, yyyy'}}
+              
+                .col-sm-6
+                  .urgency-notifications
+                    .due(
+                      ng-if='g.urgency.due.length',
+                      ng-class='getUrgencyClass(g.urgency.due[0].expiryDate, "block")'
+                    )
+                      .count {{g.urgency.due.length}}
+                      .text due within {{daysDue}} days
+                      
+                    .due(
+                      ng-if='g.urgency.dueSoon.length',
+                      ng-class='getUrgencyClass(g.urgency.dueSoon[0].expiryDate, "block")'
+                    )
+                      .count {{g.urgency.dueSoon.length}}
+                      .text due within {{daysDueSoon}} days
+
+    div(ng-if="viewHolder")
+      p(ng-if='!certificationHolderGroups[t.classification] || !certificationHolderGroups[t.classification].length === 0') No holders of this type.
+
+      ol.block-list.list-unstyled(
+        ng-if='certificationHolderGroups[t.classification].length > 0'
+      )
+        li.block-list-item(ng-repeat='g in holderObjects | filter : groupSearchFilter | orderBy: "name"' ng-if="g.classification == t.classification")
+          .row
+            .col-xs-12
+              h3.name
+                span(ng-if='g.classification === "person"') {{ g.person.nameFirst }} {{g.person.nameLast}}
+                span(ng-if='g.classification === "equipment"') {{g.equipment.description}}
+                span(ng-if='g.classification === "material"') {{g.material.description}}
+                span(ng-if='g.classification === "vehicle"') {{g.vehicle.make}} {{g.vehicle.model}} ({{g.certifications[0].vehicle.registration}})
+              ol.list-unstyled.certifications-by-urgency 
+                
+                li
+                  .row
+                    div(ng-class='{"col-xs-6": !hasEditRight(), "col-lg-4 col-sm-3 col-xs-6": hasEditRight()}')
+                      .name
+                        strong Certification
+                    .col-xs-3
+                      .expiry-date
+                        strong Date
+                    .col-xs-3
+                      .expiry-date
+                        strong Expiry
+      
+                li(ng-repeat='c in g.certifications | orderBy: "expiryDate"')
+                  .row(ng-class='getUrgencyClass(c.expiryDate)')
+                    div(ng-class='{"col-xs-6": !hasEditRight(), "col-lg-4 col-sm-3 col-xs-6": hasEditRight()}')
+                      .name {{c.name}}
+                    
+                    .col-xs-3
+                      .expiry-date {{c.date | date : 'MMM d, yyyy'}}
+                    
+                    .col-xs-3
+                      .expiry-date {{c.expiryDate | date : 'MMM d, yyyy'}}
+                    
+                    .col-lg-2.col-sm-3.hidden-print(ng-if='hasEditRight()')
+                        button.btn.btn-default.btn-block(
+                          type='button'
+                          ng-click='update(c)'
+                        ) Update

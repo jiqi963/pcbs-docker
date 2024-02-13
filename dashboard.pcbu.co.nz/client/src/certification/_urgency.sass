@@ -1,0 +1,92 @@
+$isDueColor: #c1272d
+$isDueSoonColor: #f15a24
+$isNotDueColor: #009245
+
+.is-due
+  color: $isDueColor
+
+.is-due-soon
+  color: $isDueSoonColor
+
+.is-due-block,
+.is-due-soon-block,
+.is-not-due-block
+  color: white
+  width: 140px
+  height: 115px
+  padding: 10px 10px 0
+  text-align: center
+  float: left
+  background:
+    image: url(/images/common/notice/bars.svg)
+    size: auto 115px
+
+  &:nth-child(even)
+    background:
+      position: 0 0
+
+  &:nth-child(odd)
+    background:
+      position: 140px 0
+
+  .due
+    float: left
+    font-size: 18px
+
+  .count
+    font-size: 48px
+    line-height: 1.2em
+
+  .text-only
+    margin-top: 28px
+
+.is-due-block
+  background-color: $isDueColor
+
+.is-due-soon-block
+  background-color: $isDueSoonColor
+
+.is-not-due-block
+  background-color: $isNotDueColor
+
+.annual-review-due
+  padding: 1em
+  margin-bottom: 2em
+  color: white
+  background:
+    color: $isDueColor
+    image: url(/images/common/notice/bars.svg)
+    size: auto 115px
+
+.urgency-notifications
+  float: right
+  margin: -$panel-body-padding - 1px
+
+
+@media (max-width: $screen-xs-max)
+  .is-due-block,
+  .is-due-soon-block,
+  .is-not-due-block
+    width: 100%
+    height: 55px
+    float: none
+    text-align: left
+    padding-left: $panel-body-padding
+
+    .due
+      float: none
+
+    .count
+      font-size: 30px
+      display: inline-block
+      margin-right: 5px
+
+    .text
+      display: inline-block
+
+    .text-only
+      margin-top: 8px
+
+  .urgency-notifications
+    float: none
+    margin-top: $panel-body-padding

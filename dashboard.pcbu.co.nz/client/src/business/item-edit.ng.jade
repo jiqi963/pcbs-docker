@@ -1,0 +1,334 @@
+content-bar(
+  heading='isNew ? "New business" : "Edit business"',
+  back='isNew ? null : business.name',
+  back-action='cancel'
+)
+
+.container
+  form(name='itemForm', novalidate)
+    
+    .row
+      .col-sm-6
+        
+        h2 Business details
+    
+        .form-group(ng-class='fieldClass(itemForm.name)')
+          label.control-label(for='businessName') Name
+          input#businessName.form-control(
+            name='name'
+            ng-model='business.name'
+            type='text'
+            required
+            ng-disabled='!canEditRestricted()'
+          )
+        
+        .form-group(ng-class='fieldClass(itemForm.description)')
+          label.control-label(for='businessDescription') Description
+          textarea#businessDescription.form-control(name='description', ng-model='business.description')
+        
+        .form-group(ng-class='fieldClass(itemForm.streetAddress)')
+          label.control-label(for='businessStreetAddress') Street address
+          input#businessStreetAddress.form-control(
+            name='streetAddress'
+            ng-model='business.streetAddress'
+            type='text'
+            ng-disabled='!canEditRestricted()'
+          )
+        
+        .form-group(ng-class='fieldClass(itemForm.localityName)')
+          label.control-label(for='businessLocalityName') Town/City
+          input#businessLocalityName.form-control(
+            name='localityName'
+            ng-model='business.locality.name'
+            type='text'
+            typeahead='locality.name as (locality.name + ", " + locality.region) for locality in localities | filter : $viewValue'
+            typeahead-on-select='fillRegion($item)'
+            ng-disabled='!canEditRestricted()'
+          )
+          
+        .form-group(ng-class='fieldClass(itemForm.localityRegion)')
+          label.control-label(for='businessLocalityRegion') Region
+          input#businessLocalityRegion.form-control(
+            name='localityRegion'
+            ng-model='business.locality.region'
+            type='text'
+            typeahead='region for region in regions | filter : $viewValue'
+            ng-disabled='!canEditRestricted()'
+          )
+        
+        .form-group(ng-if='industries')
+          label.control-label Industries
+          ui-select(
+            multiple
+            tagging
+            tagging-label='false'
+            tagging-tokens='ENTER|,'
+            ng-model='business.industry'
+            ng-disabled='!canEditRestricted()'
+          )
+            ui-select-match(placeholder='Select or enter industries') {{$item}}
+            ui-select-choices(repeat='industry in industries | filter: $select.search') {{industry}}
+
+      .col-sm-6
+        
+        .row
+          
+          .col-sm-12
+        
+            h2 Service details
+        
+            .form-group
+              div(ng-if='canEditRestricted()')
+                div
+                  label.control-label System number
+                .btn-group
+                  label.btn.btn-primary(
+                    ng-model='business.serviceLevel'
+                    btn-radio='2'
+                  ) 2
+                  label.btn.btn-primary(
+                    ng-model='business.serviceLevel'
+                    btn-radio='3'
+                  ) 3
+                  label.btn.btn-primary(
+                    ng-model='business.serviceLevel'
+                    btn-radio='4'
+                  ) 4
+                  label.btn.btn-primary(
+                    ng-model='business.serviceLevel'
+                    btn-radio='5'
+                  ) 5
+              
+              div(ng-if='!canEditRestricted()')
+                div
+                  label.control-label System number
+                p {{business.serviceLevel}}
+            
+            .form-group(ng-class='fieldClass(itemForm.serviceStartDate)')
+              label.control-label(for='businessServiceStartDate') Service start date
+              .input-group
+                input#businessServiceStartDate.form-control(
+                  name='serviceStartDate'
+                  type='text'
+                  datepicker-popup='MMMM d, yyyy'
+                  ng-model='business.serviceStartDate'
+                  is-open='isDatePickerOpen'
+                  datepicker-options='{"show-weeks": false}'
+                  ng-click='openDatePicker($event)'
+                  ng-disabled='!canEditRestricted()'
+                  required
+                )
+                span.input-group-btn
+                  button.btn.btn-default(
+                    type='button'
+                    ng-click='openDatePicker($event)'
+                  )
+                    i.glyphicon.glyphicon-calendar
+            
+            .form-group(ng-if='canEditRestricted()')
+              label.control-label(for='businessClient') Client with access
+              .input-group
+                select#businessClient(
+                  name='businessClient'
+                  ng-model='business.clientId'
+                  ng-options='c.id as c.name for c in clients'
+                )
+                
+            .form-group(ng-if='canEditRestricted()')
+              label.control-label(for='businessClientEditor')
+                input#businessClientEditor(
+                  type='checkbox'
+                  name='businessClientEditor'
+                  ng-model='business.isClientEditable'
+                )
+                |  Allow client to edit
+        
+        .row
+          
+          .col-sm-12
+        
+            h2 Contacts
+            
+            button.btn.pull-right(
+              ng-show='contactTabs[0].active && !pcbu.contact'
+              ng-click='pcbu.edit({})'
+            ) Add PCBU
+            
+            button.btn.pull-right(
+              ng-show='contactTabs[1].active && !officer.contact'
+              ng-click='officer.edit({})'
+            ) Add officer
+            
+            tabset
+              tab(active='contactTabs[0].active')
+                tab-heading PCBU
+                
+                
+                ul.contact-list.list-unstyled
+                  li.contact-list-item(ng-repeat='c in business.contactPcbu track by $index')
+                    .row
+                      .col-xs-8
+                        .name {{c.nameFirst}} {{c.nameLast}}
+                          span(ng-if='c.position') , {{c.position}}
+                        .phone(ng-if='c.phone') Phone: {{c.phone}}
+                        .mobile(ng-if='c.mobile') Mobile: {{c.mobile}}
+                        .email(ng-if='c.email') Email: {{c.email}}
+                        
+                      .col-xs-4
+                        button.btn.pull-right(ng-hide='pcbu.contact', ng-click='pcbu.edit(c)') Edit
+                
+                .edit-contact(ng-if='pcbu.contact')
+                  ng-form(name='editContactPcbuForm', novalidate)
+                    
+                    .form-group(ng-class='fieldClass(editContactPcbuForm.nameFirst)')
+                      label.control-label(for='pcbuContactNameFirst') First name
+                      input#pcbuContactNameFirst.form-control(
+                        name='nameFirst'
+                        ng-model='pcbu.contact.nameFirst'
+                        type='text'
+                        required
+                      )
+                      
+                    .form-group(ng-class='fieldClass(editContactPcbuForm.nameLast)')
+                      label.control-label(for='pcbuContactNamelast') Last name
+                      input#pcbuContactNameLast.form-control(
+                        name='nameLast'
+                        ng-model='pcbu.contact.nameLast'
+                        type='text'
+                        required
+                      )
+                      
+                    .form-group(ng-class='fieldClass(editContactPcbuForm.position)')
+                      label.control-label(for='pcbuContactPosition') Position
+                      input#pcbuContactposition.form-control(
+                        name='position'
+                        ng-model='pcbu.contact.position'
+                        type='text'
+                      )
+                      
+                    .form-group(ng-class='fieldClass(editContactPcbuForm.phone)')
+                      label.control-label(for='pcbuContactPhone') Phone
+                      input#pcbuContactPhone.form-control(
+                        name='phone'
+                        ng-model='pcbu.contact.phone'
+                        type='text'
+                      )
+                      
+                    .form-group(ng-class='fieldClass(editContactPcbuForm.mobile)')
+                      label.control-label(for='pcbuContactMobile') Mobile
+                      input#pcbuContactMobile.form-control(
+                        name='mobile'
+                        ng-model='pcbu.contact.mobile'
+                        type='text'
+                      )
+                    
+                    .form-group(ng-class='fieldClass(editContactPcbuForm.email)')
+                      label.control-label(for='pcbuContactEmail') Email
+                      input#pcbuContactEmail.form-control(
+                        name='email'
+                        ng-model='pcbu.contact.email'
+                        type='email'
+                      )
+                    
+                    button.btn.pull-left(
+                      ng-hide='isNew'
+                      ng-click='pcbu.delete(c)'
+                    ) Delete
+                    
+                    .btn-group.pull-right
+                      button.btn(
+                        ng-click='pcbu.save()'
+                        ng-disabled='!editContactPcbuForm.$dirty || !editContactPcbuForm.$valid'
+                      ) Save
+                      button.btn(
+                        ng-click='pcbu.cancel()'
+                      ) Cancel
+
+                    
+              tab(active='contactTabs[1].active')
+                tab-heading Officer
+                ul.contact-list.list-unstyled
+                  li.contact-list-item(ng-repeat='c in business.contactOfficer track by $index')
+                    .row
+                      .col-xs-8
+                        .name {{c.nameFirst}} {{c.nameLast}}
+                        .phone {{c.phone}}
+                        .mobile {{c.mobile}}
+                        .email {{c.email}}
+                        
+                      .col-xs-4
+                        button.btn.pull-right(ng-hide='officer.contact', ng-click='officer.edit(c)') Edit
+                  
+                .edit-contact(ng-if='officer.contact')
+                  ng-form(name='editContactOfficerForm', novalidate)
+                    .form-group(ng-class='fieldClass(editContactOfficerForm.nameFirst)')
+                      label.control-label(for='officerContactNameFirst') First name
+                      input#officerContactNameFirst.form-control(
+                        name='nameFirst'
+                        ng-model='officer.contact.nameFirst'
+                        type='text'
+                        required
+                      )
+                    
+                    .form-group(ng-class='fieldClass(editContactOfficerForm.nameLast)')
+                      label.control-label(for='officerContactNamelast') Last name
+                      input#officerContactNameLast.form-control(
+                        name='nameLast'
+                        ng-model='officer.contact.nameLast'
+                        type='text'
+                        required
+                      )
+                    
+                    .form-group(ng-class='fieldClass(editContactOfficerForm.position)')
+                      label.control-label(for='officerContactPosition') Position
+                      input#officerContactposition.form-control(
+                        name='position'
+                        ng-model='officer.contact.position'
+                        type='text'
+                      )
+                      
+                    .form-group(ng-class='fieldClass(editContactOfficerForm.phone)')
+                      label.control-label(for='officerContactPhone') Phone
+                      input#officerContactPhone.form-control(
+                        name='phone'
+                        ng-model='officer.contact.phone'
+                        type='text'
+                      )
+                      
+                    .form-group(ng-class='fieldClass(editContactOfficerForm.mobile)')
+                      label.control-label(for='officerContactMobile') Mobile
+                      input#officerContactMobile.form-control(
+                        name='mobile'
+                        ng-model='officer.contact.mobile'
+                        type='text'
+                      )
+                    
+                    .form-group(ng-class='fieldClass(editContactOfficerForm.email)')
+                      label.control-label(for='officerContactEmail') Email
+                      input#officerContactEmail.form-control(
+                        name='email'
+                        ng-model='officer.contact.email'
+                        type='email'
+                      )
+                    
+                    button.btn.pull-left(
+                      ng-hide='isNew'
+                      ng-click='officer.delete(c)'
+                    ) Delete
+                    
+                    .btn-group.pull-right
+                      button.btn(
+                        ng-click='officer.save()'
+                        ng-disabled='!editContactOfficerForm.$dirty || !editContactOfficerForm.$valid'
+                      ) Save
+                      button.btn(
+                        ng-click='officer.cancel()'
+                      ) Cancel
+      
+    .row.hidden-print
+      .col-xs-12
+        button.btn.btn-default(ng-click='delete()', ng-if='!isNew && delete') Delete
+        
+        .btn-group.pull-right
+          button.btn.btn-default(ng-click='save()', ng-disabled='!itemForm.$dirty || !itemForm.$valid') Save changes
+          button.btn.btn-default(ng-click='cancel()') Cancel

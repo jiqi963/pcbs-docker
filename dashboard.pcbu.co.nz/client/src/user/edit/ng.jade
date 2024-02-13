@@ -1,0 +1,89 @@
+content-bar(
+  heading='user.isNew ? "New user" : "Edit user"',
+  back='user.isAdmin ? "All users" : null',
+  back-action='cancel'
+)
+
+.container
+  form(name='itemForm', novalidate)
+    
+    .row
+      .col-sm-6
+        
+        h2 User details
+    
+        .form-group(ng-class='fieldClass(itemForm.nameFirst)')
+          label.control-label(for='userNameFirst') First Name
+          input#userNameFirst.form-control(name='nameFirst', ng-model='user.nameFirst', type='text', required)
+        
+        .form-group(ng-class='fieldClass(itemForm.nameLast)')
+          label.control-label(for='userNameLast') Last Name
+          input#userNameLast.form-control(name='nameLast', ng-model='user.nameLast', type='text', required)
+        
+        .form-group(ng-class='fieldClass(itemForm.username)')
+          label.control-label(for='userUsername') Username
+          input#userUsername.form-control(name='username', ng-model='user.username', type='text', required)
+      
+      .col-sm-6(ng-if='currentUser.isAdmin')
+        
+        h2 User settings
+        
+        .form-group
+          div
+            label.control-label Admin user
+          .btn-group
+            label.btn.btn-primary(
+              ng-model='user.isAdmin'
+              btn-radio='true'
+            ) Yes
+            label.btn.btn-primary(
+              ng-model='user.isAdmin'
+              btn-radio='false'
+            ) No
+            
+    .row
+      .col-sm-6
+        button.btn.btn-primary(
+          type='button'
+          ng-show='user.isCurrent'
+          ng-model='changePassword'
+          btn-checkbox 
+          btn-checkbox-true='true'
+          btn-checkbox-false='false'
+          style='margin-bottom: 1em;'
+        ) Change password
+        
+        div(ng-if='user.isNew || (user.isCurrent && changePassword)')
+          .form-group(ng-class='fieldClass(itemForm.password)')
+            label.control-label(for='userPassword') Password
+            input#userPassword.form-control(
+              name='password'
+              ng-model='user.password'
+              type='password'
+              required
+            )
+          
+          .form-group(ng-class='fieldClass(itemForm.passwordConfirm)')
+            label.control-label(for='userPasswordConfirm') Confirm password
+            input#userPasswordConfirm.form-control(
+              name='passwordConfirm'
+              ng-model='user.passwordConfirm'
+              type='password'
+              ui-validate='{match: "$value === user.password"}'
+              required
+            )
+          
+          span.help-block(
+            ng-show='itemForm.passwordConfirm.$error.match'
+          ) Password and confirm password must match
+    
+    .row
+      .col-xs-12
+        button.btn.btn-default(
+          ng-click='delete()'
+          ng-if='currentUser.user.isAdmin && !user.isNew && !user.isCurrent'
+        ) Delete
+        
+        .btn-group.pull-right
+          button.btn.btn-default(ng-click='save()', ng-disabled='!itemForm.$dirty || !itemForm.$valid') Save changes
+          button.btn.btn-default(ng-click='cancel()') Cancel

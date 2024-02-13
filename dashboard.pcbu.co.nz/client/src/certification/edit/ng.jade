@@ -1,0 +1,155 @@
+content-bar(
+  heading='certification.isNew ? "New certification" : "Edit certification"',
+  back='certification.isNew ? null : business.name + " - " +certification.name',
+  back-action='cancel'
+)
+
+.container
+  .row
+    .col-xs-12
+      form(name='itemForm', novalidate)
+        
+        .row(ng-show='certification.isNew')
+          .col-xs-12
+            .form-group
+              div
+                label.control-label Type
+              
+              .btn-group
+                label.btn.btn-primary(
+                  ng-repeat='v in classificationsArray'
+                  ng-model='certification.classification'
+                  btn-radio='v.key'
+                ) {{v.classification.label}}
+        
+        .row
+          .col-md-2
+            .form-group
+              div
+                label.control-label Certification
+            
+              .btn-group.hidden-print
+                label.btn.btn-primary(
+                  ng-model='isNewName'
+                  btn-checkbox
+                  btn-checkbox-true='false'
+                  btn-checkbox-false='true'
+                ) Existing
+                label.btn.btn-primary(
+                  ng-model='isNewName'
+                  btn-checkbox
+                  btn-checkbox-true='true'
+                  btn-checkbox-false='false'
+                ) New
+            
+          div(ng-show='isNewName')
+            .col-md-10
+              .form-group(ng-class='fieldClass(itemForm.certificationName)')
+                label.control-label(for='certificationName') New certification name
+                input#certificationName.form-control(
+                  name='certificationName',
+                  ng-model='certification.name',
+                  type='text', 
+                  required
+                )
+          
+          div(ng-hide='isNewName').col-md-10
+            .form-group(ng-class='fieldClass(itemForm.certificationName)')
+              label.control-label Choose an existing certification
+              ui-select(ng-model='certification.name')
+                ui-select-match {{$select.selected}}
+                ui-select-choices(repeat='n in distinct.name[certification.classification] | filter: $select.search')
+                  div(ng-bind-html='n | highlight: $select.search')
+        
+        .row
+          .col-md-2
+            .form-group
+              div
+                label.control-label {{classifications[certification.classification].label}}
+            
+              .btn-group.hidden-print
+                label.btn.btn-primary(
+                  ng-model='classifications[certification.classification].isNew',
+                  btn-checkbox,
+                  btn-checkbox-true='false',
+                  btn-checkbox-false='true'
+                ) Existing
+                label.btn.btn-primary(
+                  ng-model='classifications[certification.classification].isNew',
+                  btn-checkbox,
+                  btn-checkbox-true='true',
+                  btn-checkbox-false='false'
+                ) New
+          
+          div(ng-repeat='(cKey, cValue) in classifications')
+            div(ng-if='certification.classification === cKey')
+              div(ng-show='cValue.isNew')
+                .col-md-5(
+                  ng-repeat='field in cValue.newFields'
+                  ng-class='{"col-md-offset-2": $even && !$first}'
+                )
+                  .form-group(ng-class='fieldClass(itemForm[field.name])')
+                    label.control-label(for='{{field.id}}') {{field.label}}
+                    input.form-control(
+                      id='{{field.id}}'
+                      name='{{field.name}}',
+                      ng-model='certification[cKey][field.key]',
+                      type='{{field.type}}', 
+                      ng-required='field.required'
+                    )
+              
+              div(ng-hide='cValue.isNew').col-md-10
+                .form-group
+                  label.control-label Choose an existing {{cKey}}
+                  
+                  ui-select(
+                    ng-if='cKey === "person"'
+                    ng-model='certification[cKey]'
+                  )
+                    ui-select-match
+                      span {{$select.selected.nameFirst}} {{$select.selected.nameLast}}
+                      span(ng-show='$select.selected.position') , {{$select.selected.position}}
+                    ui-select-choices(repeat='{nameFirst: p.nameFirst, nameLast: p.nameLast, position: p.position} as p in distinct[cKey] | filter: $select.search')
+                      div
+                        span(ng-bind-html='(p.nameFirst | highlight: $select.search) + " " + (p.nameLast | highlight: $select.search)')
+                        span(ng-show='p.position', ng-bind-html='", " + (p.position | highlight: $select.search)')
+                  
+                  ui-select(
+                    ng-if='cKey === "equipment" || cKey === "material"'
+                    ng-model='certification[cKey]'
+                  )
+                    ui-select-match {{$select.selected.description}}
+                    ui-select-choices(repeat='{description: p.description} as p in distinct[cKey] | filter: $select.search')
+                      div
+                        span(ng-bind-html='p.description | highlight: $select.search')
+                  
+                  ui-select(
+                    ng-if='cKey === "vehicle"'
+                    ng-model='certification[cKey]'
+                  )
+                    ui-select-match
+                      span {{$select.selected.make}} {{$select.selected.model}}
+                      span(ng-show='$select.selected.registration')  ({{$select.selected.registration}})
+                    ui-select-choices(repeat='{make: p.make, model: p.model, registration: p.registration} as p in distinct[cKey] | filter: $select.search')
+                      div
+                        span(ng-bind-html='(p.make | highlight: $select.search) + " " + (p.model | highlight: $select.search)')
+                        span(ng-bind-html='" (" + (p.registration | highlight: $select.search) + ")"')
+        
+        .row
+          .col-md-6
+            .form-group
+              label.control-label(for='certificationDate') Certification date
+              p {{certification.date | date : 'MMMM d, yyyy'}}
+              datepicker#certificationDate.well.well-sm.hidden-print(ng-model='certification.date', show-weeks='false')
+          
+          .col-md-6
+            .form-group
+              label.control-label(for='certificationExpiryDate') Expiry date
+              p(ng-class='getUrgencyClass(certification.expiryDate)') {{certification.expiryDate | date : 'MMMM d, yyyy'}}
+              datepicker#certificationExpiryDate.well.well-sm.hidden-print(ng-model='certification.expiryDate', min-date='certification.date', show-weeks='false')
+        
+        button.btn.btn-default.hidden-print(ng-click='delete()', ng-if='!certification.isNew') Delete
+        
+        .btn-group.pull-right.hidden-print
+          button.btn.btn-default(ng-click='save()', ng-disabled='!itemForm.$dirty || !itemForm.$valid') Save changes
+          button.btn.btn-default(ng-click='cancel()') Cancel

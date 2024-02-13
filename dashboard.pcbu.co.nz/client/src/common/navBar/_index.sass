@@ -1,0 +1,25 @@
+.navbar
+  background:
+    image: url(/images/common/navBar/logo-bars.svg)
+    repeat: no-repeat
+    position: right -47px top
+    size: auto 90px
+
+  border: none
+
+  .navbar-brand
+    @include text-hide()
+    background:
+      image: url(/images/common/navBar/logo.svg)
+      repeat: no-repeat
+      position: $navbar-padding-horizontal center
+      size: 135px
+    width: 135px + ($navbar-padding-horizontal * 2)
+
+  .navbar-actions
+    margin-right: 0
+
+  .navbar-text
+    a
+      color: inherit
+      text-decoration: underline
